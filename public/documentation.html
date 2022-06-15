@@ -5,15 +5,178 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Martel+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
   <title>MikeFlix</title>
 </head>
 
 <body>
-  <h1>MikeFlix</h1>
-  <p>Application that provides users with access to information about different
-    movies, directors, and genres. Users are able to sign up, update their
-    personal information, and create a list of their favorite movies.
-  </p>
+  <header>
+    <h1>MikeFlix</h1>
+    <h3>Documentation</h3>
+  </header>
+  <div>
+    <p>MikeFlix is an application that provides users with access to information about different movies, directors, and
+      genres. Users are able to sign up, update their
+      personal information, and create a list of their favorite movies.
+    </p>
+  </div>
+  <div>
+    <h2>Rest API movie data</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>URL</th>
+          <th>HTTP Method</th>
+          <th>Request body data format</th>
+          <th>Response body data format</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Return a list of movies to the user</td>
+          <td>/movies</td>
+          <td>Get</td>
+          <td>none</td>
+          <td>A JSON object holding data about all the movies</td>
+        </tr>
+        <tr>
+          <td>Return data about a single movie by title to the user</td>
+          <td>/movies/[name]</td>
+          <td>Get</td>
+          <td>none</td>
+          <td>A JSON object holding data, containing title, img url, genre, description and director of a single movie
+            by title to the user
+            <pre>
+            <code>
+            {
+            id: '',
+            title: '',
+            description: '',
+            genre: '',
+            director: '',
+            img: ''
+            }
+            </code>
+            </pre>
+          </td>
+        </tr>
+        <tr>
+          <td>Return data about a genre by name</td>
+          <td>/movies/genre/[genreName]</td>
+          <td>Get</td>
+          <td>none</td>
+          <td>A JSON object holding data about the genre:
+            <pre>
+            <code>
+            {
+            name: '',
+            description: ''
+            }
+            </code>
+            </pre>
+          </td>
+        </tr>
+        <tr>
+          <td>Return data about a director</td>
+          <td>/movies/directors/[directorsName]</td>
+          <td>Get</td>
+          <td>none</td>
+          <td>A JSON object holding data about the director:
+            <pre>
+            <code>
+            {
+            name: '',
+            bio: '',
+            birth: '',
+            death: ''
+            }
+          </code>
+           </pre>
+          </td>
+        </tr>
+        <tr>
+          <td>Allow new users to register</td>
+          <td>/users</td>
+          <td>Post</td>
+          <td>A JSON object holding data about the users to add, structured like:
+            <pre>
+            <code>
+            {
+            username: '',
+            password: '',
+            email: '',
+            birthday: '',
+            favoriteMovies: []
+            }
+          </code>
+           </pre>
+          </td>
+          <td>A JSON object holding data about the users added, inluding an ID:
+            <pre>
+            <code>
+            {
+            id: '',
+            username: '',
+            password:'',
+            email: '',
+            birthday: '',
+            favoriteMovies: []
+            }
+            </code>
+            </pre>
+          </td>
+        </tr>
+        <tr>
+          <td>Allow users to update their user info</td>
+          <td>/users/[id]</td>
+          <td>Put</td>
+          <td>none</td>
+          <td>
+            <pre>
+            <code>
+            {
+            id: '',
+            username: '',
+            password: '',
+            email: '',
+            birthday: '',
+            favoriteMovies: []
+            }
+            </code>
+            </pre>
+          </td>
+        </tr>
+        <tr>
+          <td>Allow users to add a movie to list of favorites</td>
+          <td>/users/[id]/[movieName]</td>
+          <td>Post</td>
+          <td>none</td>
+          <td>A text showing that a movie has been added to favorites</td>
+        </tr>
+        <tr>
+          <td>Allow users to remove a movie from list of favorites</td>
+          <td>/users/[id]/[movieName]</td>
+          <td>Delete</td>
+          <td>none</td>
+          <td>A text message showing that a movie has been removed from favorites</td>
+        </tr>
+        <tr>
+          <td>Allow exisiting users to deregister</td>
+          <td>/users/[id]</td>
+          <td>Delete</td>
+          <td>none</td>
+          <td>A text message indicating whether the user was successfully deregisted</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </body>
 
 </html>
