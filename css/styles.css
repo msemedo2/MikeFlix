@@ -1,0 +1,46 @@
+* {
+	text-align: center;
+	box-sizing: border-box;
+	font-family: 'Martel Sans', sans-serif;
+	color: #fff;
+	background-color: #000;
+}
+
+h1 {
+	font-family: 'Bebas Neue', cursive;
+	font-size: 5rem;
+	color: #e10002;
+	margin: 20px 0px 0px;
+}
+
+h3 {
+	font-family: 'Martel Sans', sans-serif;
+	font-size: 1.7rem;
+	color: #d81f26;
+	margin: 0px 0px 50px;
+}
+
+h2 {
+	margin: 40px 0px 40px;
+	font-size: 2rem;
+	color: #d81f26;
+}
+
+p {
+	max-width: 90%;
+	margin: 0 auto;
+}
+
+table {
+	max-width: 90%;
+	margin: 0 auto;
+	table-layout: fixed;
+}
+
+table,
+th,
+td {
+	border: 1px solid #fff;
+	border-collapse: collapse;
+	padding: 20px;
+}
