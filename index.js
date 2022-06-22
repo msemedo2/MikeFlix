@@ -1,98 +1,151 @@
 const express = require('express'),
 	morgan = require('morgan'),
 	bodyParser = require('body-parser'),
-	uuid = require('uuid');
+	mongoose = require('mongoose'),
+	Models = require('./models.js');
 
 const app = express();
+const Movies = Models.Movie;
+const Users = Models.User;
+
+mongoose.connect('mongodb://localhost:27017/MikeFlix', {
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
+});
 
 app.use(morgan('common'));
 app.use(express.static('public'));
 app.use(bodyParser.json());
 
-let users = [
-	{
-		id: 1,
-		name: 'John',
-		favoriteMovies: [],
-	},
-	{
-		id: 2,
-		name: 'Joe',
-		favoriteMovies: ['WALL-E'],
-	},
-];
-
-let movies = [
-	{
-		Title: 'The Lord of the Rings: The Fellowship of the Ring',
-		Author: 'J. R. R. Tolkien',
-		Genre: {
-			Name: 'Fantasy Fiction',
-			Description:
-				'A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.',
-		},
-		Director: {
-			Name: 'Peter Jackson',
-			Bio: "Sir Peter Jackson made history with The Lord of the Rings trilogy, becoming the first person to direct three major feature films simultaneously. The Fellowship of the Ring, The Two Towers and The Return of the King were nominated for and collected a slew of awards from around the globe, with The Return of the King receiving his most impressive collection of awards. This included three Academy Awards® (Best Adapted Screenplay, Best Director and Best Picture), two Golden Globes (Best Director and Best Motion Picture-Drama), three BAFTAs (Best Adapted Screenplay, Best Film and Viewers' Choice), a Directors Guild Award, a Producers Guild Award and a New York Film Critics Circle Award.",
-			Birth: 'October 31, 1961',
-		},
-	},
-	{
-		Title: 'The Lord of the Rings: The Two Towers',
-		Author: 'J.R.R. Tolkien',
-		Genre: {
-			Name: 'Fantasy Fiction',
-			Description:
-				'While Frodo and Sam edge closer to Mordor with the help of the shifty Gollum, the divided fellowship makes a stand against Saurons new ally, Saruman, and his hordes of Isengard.',
-		},
-		Director: {
-			Name: 'Peter Jackson',
-			Bio: "Sir Peter Jackson made history with The Lord of the Rings trilogy, becoming the first person to direct three major feature films simultaneously. The Fellowship of the Ring, The Two Towers and The Return of the King were nominated for and collected a slew of awards from around the globe, with The Return of the King receiving his most impressive collection of awards. This included three Academy Awards® (Best Adapted Screenplay, Best Director and Best Picture), two Golden Globes (Best Director and Best Motion Picture-Drama), three BAFTAs (Best Adapted Screenplay, Best Film and Viewers' Choice), a Directors Guild Award, a Producers Guild Award and a New York Film Critics Circle Award.",
-			Birth: 'October 31, 1961',
-		},
-	},
-	{
-		Title: 'The Lord of the Rings: The Return of the King',
-		Author: 'Stephanie Meyer',
-		Genre: {
-			Name: 'Fantasy Fiction',
-			Description:
-				'Gandalf and Aragorn lead the World of Men against Saurons army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.',
-		},
-		Director: {
-			Name: 'Peter Jackson',
-			Bio: "Sir Peter Jackson made history with The Lord of the Rings trilogy, becoming the first person to direct three major feature films simultaneously. The Fellowship of the Ring, The Two Towers and The Return of the King were nominated for and collected a slew of awards from around the globe, with The Return of the King receiving his most impressive collection of awards. This included three Academy Awards® (Best Adapted Screenplay, Best Director and Best Picture), two Golden Globes (Best Director and Best Motion Picture-Drama), three BAFTAs (Best Adapted Screenplay, Best Film and Viewers' Choice), a Directors Guild Award, a Producers Guild Award and a New York Film Critics Circle Award.",
-			Birth: 'October 31, 1961',
-		},
-	},
-];
-
-//Post new user
+//Add new user
 app.post('/users', (req, res) => {
-	const newUser = req.body;
-
-	if (newUser.name) {
-		newUser.id = uuid.v4();
-		users.push(newUser);
-		res.status(201).json(newUser);
-	} else {
-		res.status(400).send('users need names');
-	}
+	Users.findOne({ Username: req.body.Username })
+		.then((user) => {
+			if (user) {
+				return res.status(400).send(req.body.Username + 'already exists');
+			} else {
+				Users.create({
+					Username: req.body.Username,
+					Password: req.body.Password,
+					email: req.body.email,
+					BirthDate: req.body.BirthDate,
+				})
+					.then((user) => {
+						res.status(201).json(user);
+					})
+					.catch((error) => {
+						console.error(error);
+						res.status(500).send('Error: ' + error);
+					});
+			}
+		})
+		.catch((error) => {
+			console.error(error);
+			res.status(500).send('Error: ' + error);
+		});
 });
 
-//Update user info
-app.put('/users/:id', (req, res) => {
-	const { id } = req.params;
-	const updatedUser = req.body;
+//Get all users
+app.get('/users', (req, res) => {
+	Users.find()
+		.then((users) => {
+			res.status(201).json(users);
+		})
+		.catch((err) => {
+			console.error(err);
+			res.status(500).send('Error: ' + err);
+		});
+});
 
-	let user = users.find((user) => user.id == id);
+//Get all movies
+app.get('/movies', (req, res) => {
+	Movies.find()
+		.then((movies) => {
+			res.status(201).json(movies);
+		})
+		.catch((err) => {
+			console.error(err);
+			res.status(500).send('Error: ' + err);
+		});
+});
 
-	if (user) {
-		user.name = updatedUser.name;
-		res.status(200).json(user);
-	} else {
-		res.status(400).send('no such user');
-	}
+//Get user by Username
+app.get('/users/:Username', (req, res) => {
+	Users.findOne({ Username: req.params.Username })
+		.then((user) => {
+			res.json(user);
+		})
+		.catch((err) => {
+			console.error(err);
+			res.status(500).send('Error: ' + err);
+		});
+});
+
+//Get director by Name
+app.get('/movies/director/:Name', (req, res) => {
+	Movies.find({ 'Director.Name': req.params.Name })
+		.then((director) => {
+			res.json(director);
+		})
+		.catch((err) => {
+			console.error(err);
+			res.status(500).send('Error: ' + err);
+		});
+});
+
+//Get genre by Name
+app.get('/movies/genre/:Name', (req, res) => {
+	Movies.find({ 'Genre.Name': req.params.Name })
+		.then((genre) => {
+			res.status(201).json(genre);
+		})
+		.catch((err) => {
+			console.error(err);
+			res.status(500).send('Error: ' + err);
+		});
+});
+
+//Update user Username
+app.put('/users/:Username', (req, res) => {
+	Users.findOneAndUpdate(
+		{ Username: req.params.Username },
+		{
+			$set: {
+				Username: req.body.Username,
+				Password: req.body.Password,
+				email: req.body.email,
+				BirthDate: req.body.Birthday,
+			},
+		},
+		{ new: true },
+		(err, updatedUser) => {
+			if (err) {
+				console.error(err);
+				res.status(500).send('Error: ' + err);
+			} else {
+				res.json(updatedUser);
+			}
+		}
+	);
+});
+
+// Update user FavoriteMovies
+app.post('/users/:Username/movies/:MovieID', (req, res) => {
+	Users.findOneAndUpdate(
+		{ Username: req.params.Username },
+		{
+			$push: { FavoriteMovies: req.params.MovieID },
+		},
+		{ new: true },
+		(err, updatedUser) => {
+			if (err) {
+				console.error(err);
+				res.status(500).send('Error: ' + err);
+			} else {
+				res.json(updatedUser);
+			}
+		}
+	);
 });
 
 //Post new movie - send back text confirmation
@@ -109,72 +162,39 @@ app.post('/users/:id/:movieTitle', (req, res) => {
 	}
 });
 
-// Remove movie
-app.delete('/users/:id/:movieTitle', (req, res) => {
-	const { id, movieTitle } = req.params;
-
-	let user = users.find((user) => user.id == id);
-
-	if (user) {
-		user.favoriteMovies.filter((title) => title !== movieTitle);
-		res.status(200).send(`${movieTitle} has been removed from ${id}'s array`);
-	} else {
-		res.status(400).send('no such movie');
-	}
+// Delete user by Username
+app.delete('/users/:Username', (req, res) => {
+	Users.findOneAndRemove({ Username: req.params.Username })
+		.then((user) => {
+			if (!user) {
+				res.status(400).send(req.params.Username + ' was not found');
+			} else {
+				res.status(200).send(req.params.Username + ' was deleted.');
+			}
+		})
+		.catch((err) => {
+			console.error(err);
+			res.status(500).send('Error: ' + err);
+		});
 });
 
-// Deregister
-app.delete('/users/:id', (req, res) => {
-	const { id } = req.params;
-
-	let user = users.find((user) => user.id == id);
-
-	if (user) {
-		users = users.filter((user) => user.id != id);
-		res.status(200).send(`user ${id} has been deleted`);
-	} else {
-		res.status(400).send('no such movie');
-	}
-});
-
-// Get list of all movies to the user
-app.get('/movies', (req, res) => {
-	res.status(200).json(movies);
-});
-
-// Get data about a single movie
-app.get('/movies/:title', (req, res) => {
-	const { title } = req.params;
-	const movie = movies.find((movies) => movies.Title === title);
-	if (movie) {
-		res.status(200).json(movie);
-	} else {
-		res.status(400).send('no such movie');
-	}
-});
-
-// Get data about genre by name
-app.get('/movies/genre/:genreName', (req, res) => {
-	const { genreName } = req.params;
-	const genre = movies.find((movies) => movies.Genre.Name === genreName).Genre;
-	if (genre) {
-		res.status(200).json(genre);
-	} else {
-		res.status(400).send('no such genre');
-	}
-});
-
-// Get data about director by name
-app.get('/movies/director/:directorName', (req, res) => {
-	const { directorName } = req.params;
-	const director = movies.find(
-		(movies) => movies.Director.Name === directorName
-	).Director;
-	if (director) {
-		res.status(200).json(director);
-	} else {
-		res.status(400).send('no such director');
-	}
+// Delete favorite movie
+app.delete('/users/:Username/movies/:MovieID', (req, res) => {
+	Users.findOneAndUpdate(
+		{ Username: req.params.Username },
+		{
+			$pull: { FavoriteMovies: req.params.MovieID },
+		},
+		{ new: true },
+		(err, updatedUser) => {
+			if (err) {
+				console.error(err);
+				res.status(500).send('Error: ' + err);
+			} else {
+				res.json(updatedUser);
+			}
+		}
+	);
 });
 
 // Listen for requests
