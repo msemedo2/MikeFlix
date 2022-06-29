@@ -29,6 +29,11 @@ let auth = require('./auth')(app);
 const passport = require('passport');
 require('./passport');
 
+//default message
+app.get('/', (req, res) => {
+	res.send('This ia an API for movie catalogs');
+});
+
 //CREATE new user
 app.post(
 	'/users',
