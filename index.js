@@ -44,7 +44,7 @@ app.post(
 			'Username contains non alphanumeric characters - not allowed.'
 		).isAlphanumeric(),
 		check('Password', 'Password is required').not().isEmpty(),
-		check('Email', 'Email does not appear to be valid').isEmail(),
+		check('email', 'Email does not appear to be valid').isEmail(),
 	],
 	(req, res) => {
 		let errors = validationResult(req);
@@ -172,6 +172,7 @@ app.put(
 		check('Password', 'Password is required').not().isEmpty(),
 		check('Email', 'Email does not appear to be valid').isEmail(),
 	],
+	passport.authenticate('jwt', { session: false }),
 	(req, res) => {
 		let errors = validationResult(req);
 
@@ -185,7 +186,7 @@ app.put(
 					Username: req.body.Username,
 					Password: req.body.Password,
 					Email: req.body.Email,
-					Birthday: req.body.Birthday,
+					BirthDate: req.body.Birthday,
 				},
 			},
 			{ new: true },
