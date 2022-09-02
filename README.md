@@ -8,18 +8,18 @@ Creating a backend API to store information about movies and allow users to crea
 
 ### Dependencies
 
-• Node.JS
-• express
-• express-validator
-• passport
-• passport-jwt
-• passport-local
-• body-parser
-• mongoose
-• cors
-• bcrypt
-• morgan
-• lodash
+- Node.JS
+- express
+- express-validator
+- passport
+- passport-jwt
+- passport-local
+- body-parser
+- mongoose
+- cors
+- bcrypt
+- morgan
+- lodash
 
 ### Executing program
 
