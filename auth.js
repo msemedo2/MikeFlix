@@ -5,6 +5,11 @@ const jwt = require('jsonwebtoken'),
 
 require('./passport.js'); // local passport file
 
+/**
+ *
+ * @param {*} user
+ * @returns JWT token
+ */
 let generateJWTToken = (user) => {
 	return jwt.sign(user, jwtSecret, {
 		subject: user.Username, // username encoded in the JWT

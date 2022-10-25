@@ -1,3 +1,4 @@
+//requiring modules
 const express = require('express'),
 	morgan = require('morgan'),
 	bodyParser = require('body-parser'),
@@ -18,6 +19,7 @@ mongoose.connect(process.env.CONNECTION_URI, {
 	useUnifiedTopology: true,
 });
 
+// Middleware
 app.use(morgan('common'));
 app.use(express.static('public'));
 app.use(bodyParser.json());
@@ -25,7 +27,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const cors = require('cors');
 app.use(cors());
+
+// Importing auth.js file  to my  project
 let auth = require('./auth')(app);
+
+// Importing passport.js file to my project
 const passport = require('passport');
 require('./passport');
 
