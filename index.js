@@ -50,7 +50,6 @@ app.post(
 			'Username contains non alphanumeric characters - not allowed.'
 		).isAlphanumeric(),
 		check('Password', 'Password is required').not().isEmpty(),
-		check('email', 'Email does not appear to be valid').isEmail(),
 	],
 	(req, res) => {
 		let errors = validationResult(req);
@@ -67,8 +66,6 @@ app.post(
 					Users.create({
 						Username: req.body.Username,
 						Password: hashedPassword,
-						email: req.body.email,
-						BirthDate: req.body.BirthDate,
 					})
 						.then((user) => {
 							res.status(201).json(user);
@@ -176,7 +173,6 @@ app.put(
 			'Username contains non alphanumeric characters - not allowed.'
 		).isAlphanumeric(),
 		check('Password', 'Password is required').not().isEmpty(),
-		check('email', 'Email does not appear to be valid').isEmail(),
 	],
 	passport.authenticate('jwt', { session: false }),
 	(req, res) => {
@@ -192,8 +188,6 @@ app.put(
 				$set: {
 					Username: req.body.Username,
 					Password: hashedPassword,
-					Email: req.body.Email,
-					BirthDate: req.body.Birthday,
 				},
 			},
 			{ new: true },
